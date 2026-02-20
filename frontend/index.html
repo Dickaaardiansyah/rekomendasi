@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPK Mapel Peminatan — Beranda</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<!-- ─── Navbar ──────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="index.html">
+      📚 <span>SPK</span>Mapel
+    </a>
+    <ul class="navbar-links">
+      <li><a href="index.html">Beranda</a></li>
+      <li><a href="pages/riasec.html">Tes RIASEC</a></li>
+      <li><a href="pages/grades.html">Input Nilai</a></li>
+      <li><a href="pages/result.html">Hasil &amp; Rekomendasi</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ─── Hero ─────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Sistem Pendukung Keputusan · Kurikulum Merdeka 2024</div>
+    <h1>Temukan Peminatan<br>yang <em>Tepat</em> untukmu</h1>
+    <p>
+      Panduan berbasis data untuk siswa kelas 10 dalam memilih mata pelajaran peminatan
+      di kelas 11 &amp; 12. Menggunakan tes kepribadian RIASEC dan metode SAW
+      (Simple Additive Weighting).
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge">📊 Metode SAW</span>
+      <span class="hero-badge">🧠 Tes RIASEC Holland</span>
+      <span class="hero-badge">📋 Kurikulum Merdeka</span>
+      <span class="hero-badge">🎯 4 Kriteria Keputusan</span>
+    </div>
+    <div class="hero-cta">
+      <a href="pages/riasec.html" class="btn btn-primary btn-lg">Mulai Tes RIASEC →</a>
+      <a href="#cara-kerja" class="btn btn-ghost btn-lg" style="border-color:rgba(255,255,255,.2);color:#e2e8f0">Cara Kerja</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Main Content ──────────────────────────────────────────────────────── -->
+<div class="container">
+
+  <!-- Alur Pemilihan -->
+  <div id="cara-kerja" style="margin-bottom:3rem;">
+    <h2 class="section-title" style="font-family:var(--font-display);font-size:1.75rem;margin-bottom:.5rem;">
+      Bagaimana Proses Pemilihan Peminatan?
+    </h2>
+    <p style="color:var(--muted);margin-bottom:2rem;max-width:600px;line-height:1.75;">
+      Berdasarkan kebijakan Kurikulum Merdeka, pemilihan dilakukan pada <strong>akhir semester 2 kelas 10</strong>
+      dengan bimbingan guru BK, wali kelas, dan orang tua.
+    </p>
+
+    <div class="grid-auto" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">🧠</div>
+        <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Langkah 1</div>
+        <h3 class="fw-700 mb-1">Tes Minat &amp; Bakat RIASEC</h3>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.65;">
+          Kenali profil kepribadianmu berdasarkan 6 dimensi Holland: Realistic, Investigative,
+          Artistic, Social, Enterprising, dan Conventional.
+        </p>
+      </div>
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">📝</div>
+        <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Langkah 2</div>
+        <h3 class="fw-700 mb-1">Input Nilai Rapor Kelas 10</h3>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.65;">
+          Masukkan nilai rata-rata mata pelajaran kelas 10 sebagai dasar penilaian
+          kemampuan akademikmu.
+        </p>
+      </div>
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">⚙️</div>
+        <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Langkah 3</div>
+        <h3 class="fw-700 mb-1">Perhitungan SAW Otomatis</h3>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.65;">
+          Algoritma SAW menghitung skor berdasarkan 4 kriteria: nilai akademik, kecocokan
+          RIASEC, relevansi cita-cita, dan ketersediaan di sekolah.
+        </p>
+      </div>
+      <div class="card">
+        <div style="font-size:2rem;margin-bottom:.75rem;">🤝</div>
+        <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Langkah 4</div>
+        <h3 class="fw-700 mb-1">Konsultasi dengan Guru BK</h3>
+        <p style="font-size:.875rem;color:var(--muted);line-height:1.65;">
+          Hasil sistem bersifat pendukung. Diskusikan dengan guru BK, wali kelas,
+          dan orang tua untuk keputusan final.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contoh Penerapan -->
+  <div class="card card-amber" style="margin-bottom:2rem;">
+    <h3 class="fw-700 mb-2" style="font-size:1.1rem;">💡 Contoh Penerapan Nyata</h3>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:.75rem;font-weight:600;color:#92400e;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem;">🩺 Calon Dokter</div>
+        <p style="font-size:.875rem;line-height:1.7;color:#78350f;">
+          Seorang siswa yang bercita-cita menjadi <strong>dokter</strong> akan disarankan untuk memilih
+          paket: <strong>Biologi, Kimia, dan Matematika Tingkat Lanjut</strong>.
+          Ia tidak perlu mengambil Ekonomi atau Geografi yang tidak relevan dengan jalur karinya.
+        </p>
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:600;color:#92400e;letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem;">💼 Calon Ekonom</div>
+        <p style="font-size:.875rem;line-height:1.7;color:#78350f;">
+          Siswa yang ingin kuliah di <strong>jurusan Ekonomi</strong> akan memilih:
+          <strong>Ekonomi, Matematika Tingkat Lanjut, dan Sosiologi</strong>
+          sebagai paket mata pelajaran pilihan yang mendukung tujuan studinya.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIASEC Quick Reference -->
+  <div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">
+      <h2>Dimensi Kepribadian RIASEC</h2>
+      <p>Teori Holland (1959) — dasar ilmiah pemilihan karir dan pendidikan</p>
+    </div>
+    <div id="riasecGrid" class="score-grid"></div>
+  </div>
+
+  <!-- CTA -->
+  <div class="card card-navy" style="text-align:center;padding:3rem 2rem;">
+    <h2 style="font-family:var(--font-display);font-size:1.75rem;color:var(--cream);margin-bottom:.75rem;">
+      Siap Menemukan Peminatanmu?
+    </h2>
+    <p style="color:#94a3b8;margin-bottom:2rem;">
+      Mulai dengan tes RIASEC — hanya 30 pertanyaan, 5–10 menit.
+    </p>
+    <a href="pages/riasec.html" class="btn btn-primary btn-lg">Mulai Tes Sekarang →</a>
+  </div>
+
+</div>
+
+<!-- ─── Footer ────────────────────────────────────────────────────────────── -->
+<footer>
+  <p>
+    <strong>SPK Pemilihan Mata Pelajaran Peminatan</strong> — Berbasis Kurikulum Merdeka (Permendikbudristek No. 12 Tahun 2024)<br>
+    Metode SAW · Teori Holland (1959) · O*NET Interest Profiler<br>
+    <span style="font-size:.75rem;">Sistem ini bersifat pendukung keputusan, bukan penentu akhir.</span>
+  </p>
+</footer>
+
+<script src="components/shared.js"></script>
+<script>
+const RIASEC_INFO = [
+  { code:'R', label:'Realistic',     color:'#10b981', desc:'Pekerjaan fisik, teknis, outdoor. Suka bekerja dengan tangan dan mesin.' },
+  { code:'I', label:'Investigative', color:'#3b82f6', desc:'Analisis, penelitian, sains. Suka berpikir kritis dan memecahkan masalah.' },
+  { code:'A', label:'Artistic',      color:'#8b5cf6', desc:'Kreativitas, ekspresi diri. Suka seni, musik, menulis, dan desain.' },
+  { code:'S', label:'Social',        color:'#f59e0b', desc:'Membantu orang lain, mengajar. Berorientasi pada interaksi sosial.' },
+  { code:'E', label:'Enterprising',  color:'#ef4444', desc:'Memimpin, bisnis, berbicara. Ambisius dan suka mempengaruhi orang lain.' },
+  { code:'C', label:'Conventional',  color:'#06b6d4', desc:'Administrasi, data, terstruktur. Suka aturan yang jelas dan keteraturan.' },
+];
+
+document.getElementById('riasecGrid').innerHTML = RIASEC_INFO.map(r => `
+  <div class="score-card" data-dim="${r.code}" style="text-align:left;">
+    <div class="score-dim">${r.code} — ${r.label}</div>
+    <div class="score-bar" style="margin-top:.5rem;margin-bottom:.75rem;">
+      <div class="score-bar-fill" style="width:60%;background:${r.color};"></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);line-height:1.5;">${r.desc}</p>
+  </div>
+`).join('');
+
+// Check if returning from test
+const riasecData = Store.get('riasecResult');
+if (riasecData) {
+  const banner = document.createElement('div');
+  banner.className = 'info-box info-box-green';
+  banner.style.cssText = 'margin:1.5rem 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;';
+  banner.innerHTML = `
+    <span>✅ Data tes RIASEC tersimpan untuk <strong>${riasecData.studentName}</strong> (Holland Code: <strong>${riasecData.hollandCode}</strong>)</span>
+    <a href="pages/grades.html" class="btn btn-dark" style="font-size:.85rem;">Lanjut Input Nilai →</a>
+  `;
+  document.querySelector('.container').prepend(banner);
+}
+</script>
+</body>
+</html>

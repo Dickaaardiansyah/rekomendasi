@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hasil &amp; Rekomendasi — SPK Mapel</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="../index.html">📚 <span>SPK</span>Mapel</a>
+    <ul class="navbar-links">
+      <li><a href="../index.html">Beranda</a></li>
+      <li><a href="riasec.html">Tes RIASEC</a></li>
+      <li><a href="grades.html">Input Nilai</a></li>
+      <li><a href="result.html">Hasil</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:2rem;">
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step done"><div class="step-num">✓</div><div class="step-label">Tes RIASEC</div></div>
+    <div class="step-line"></div>
+    <div class="step done"><div class="step-num">✓</div><div class="step-label">Input Nilai</div></div>
+    <div class="step-line"></div>
+    <div class="step active"><div class="step-num">3</div><div class="step-label">Hasil SAW</div></div>
+  </div>
+
+  <!-- Loading State -->
+  <div id="loadingState" class="card" style="text-align:center;padding:3rem;">
+    <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 1rem;"></div>
+    <p style="color:var(--muted);">Memuat hasil analisis...</p>
+  </div>
+
+  <!-- Results (hidden until loaded) -->
+  <div id="resultContent" class="hidden">
+
+    <!-- Header -->
+    <div class="card card-navy mb-3" style="padding:2rem;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
+        <div>
+          <div style="font-size:.7rem;color:var(--amber);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;">
+            Hasil Analisis SPK
+          </div>
+          <h1 id="studentTitle" style="font-family:var(--font-display);font-size:1.75rem;color:var(--cream);margin-bottom:.4rem;"></h1>
+          <div style="color:#94a3b8;font-size:.875rem;" id="studentMeta"></div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:.65rem;color:var(--amber);font-family:var(--font-mono);letter-spacing:.1em;margin-bottom:.25rem;">HOLLAND CODE</div>
+          <div id="hollandDisplay" style="font-family:var(--font-display);font-size:3rem;font-weight:800;color:var(--amber);letter-spacing:.2em;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIASEC Scores + Chart -->
+    <div class="grid-2 mb-3">
+      <div class="card">
+        <h3 class="section-title" style="font-size:1.1rem;">📊 Skor RIASEC</h3>
+        <div id="riasecScores"></div>
+      </div>
+      <div class="card">
+        <h3 class="section-title" style="font-size:1.1rem;">🎯 Profil Kepribadian</h3>
+        <div id="topPersonality"></div>
+        <div id="careerPackageMatch" class="mt-3"></div>
+      </div>
+    </div>
+
+    <!-- SAW Method Explanation -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h2>⚙️ Metodologi: Simple Additive Weighting (SAW)</h2>
+        <p>Detail kriteria, bobot, dan cara perhitungan</p>
+      </div>
+      <div class="grid-auto mb-2" id="criteriaGrid"></div>
+      <div class="info-box info-box-blue" style="font-size:.85rem;">
+        <strong>Formula SAW:</strong> V<sub>i</sub> = Σ (W<sub>j</sub> × R<sub>ij</sub>)<br>
+        Di mana: W<sub>j</sub> = bobot kriteria ke-j, R<sub>ij</sub> = nilai ternormalisasi alternatif i pada kriteria j.<br>
+        Normalisasi benefit: r<sub>ij</sub> = x<sub>ij</sub> / max(x<sub>j</sub>)
+      </div>
+    </div>
+
+    <!-- Recommendations Table -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h2>🏆 Ranking Rekomendasi Mata Pelajaran</h2>
+        <p>Diurutkan berdasarkan skor SAW tertinggi · <span id="totalAlts"></span> alternatif dianalisis</p>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Mata Pelajaran</th>
+              <th>Kategori</th>
+              <th>Akademik (40%)</th>
+              <th>RIASEC (30%)</th>
+              <th>Cita-cita (20%)</th>
+              <th>Ketersediaan (10%)</th>
+              <th>Skor SAW</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top 3 Detail Cards -->
+    <div class="mb-3">
+      <h3 class="section-title mb-2">🎖️ Top 3 Rekomendasi Utama</h3>
+      <div class="grid-3" id="top3Cards"></div>
+    </div>
+
+    <!-- Career Package Match -->
+    <div class="card card-amber mb-3" id="careerSection" style="display:none;">
+      <div class="card-header" style="border-color:#fde68a;">
+        <h2>💼 Kecocokan Paket Karir</h2>
+        <p>Berdasarkan cita-cita dan hasil rekomendasi SAW</p>
+      </div>
+      <div id="careerContent"></div>
+    </div>
+
+    <!-- BK Advice -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h2>🤝 Simulasi Saran Guru BK</h2>
+        <p>Rekomendasi konsultasi akhir semester 2 kelas 10</p>
+      </div>
+      <div id="bkAdvice"></div>
+    </div>
+
+    <!-- Normalized Matrix Detail (Collapsible) -->
+    <div class="card mb-3">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleMatrix()">
+        <h3 class="fw-600" style="font-size:1rem;">📐 Detail Matriks Normalisasi SAW</h3>
+        <span id="matrixToggleIcon" style="font-size:.8rem;color:var(--muted);">Tampilkan ▼</span>
+      </div>
+      <div id="matrixPanel" class="hidden mt-3">
+        <div class="table-wrap">
+          <table class="data-table" id="matrixTable"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;">
+      <button class="btn btn-ghost" onclick="window.print()">🖨️ Cetak Hasil</button>
+      <a href="riasec.html" class="btn btn-ghost">🔄 Ulangi Tes</a>
+      <button class="btn btn-primary" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Kembali ke Atas</button>
+    </div>
+
+  </div><!-- #resultContent -->
+
+</div><!-- .container -->
+
+<footer>
+  <p>
+    <strong>SPK Mapel</strong> — Sistem Pendukung Keputusan Pemilihan Mata Pelajaran Peminatan<br>
+    Metode SAW · Teori Holland (1959) · Kurikulum Merdeka 2024<br>
+    <span style="font-size:.75rem;">Hasil ini bersifat rekomendasi. Keputusan final melalui konsultasi dengan guru BK dan orang tua.</span>
+  </p>
+</footer>
+
+<script src="../components/shared.js"></script>
+<script>
+// ─── RIASEC Meta (local to this page) ────────────────────────────────────────
+const PAGE_RIASEC_META = [
+  { key:'realistic',     code:'R', label:'Realistic',     color:'#10b981', icon:'🔧' },
+  { key:'investigative', code:'I', label:'Investigative', color:'#3b82f6', icon:'🔬' },
+  { key:'artistic',      code:'A', label:'Artistic',      color:'#8b5cf6', icon:'🎨' },
+  { key:'social',        code:'S', label:'Social',        color:'#f59e0b', icon:'🤝' },
+  { key:'enterprising',  code:'E', label:'Enterprising',  color:'#ef4444', icon:'💼' },
+  { key:'conventional',  code:'C', label:'Conventional',  color:'#06b6d4', icon:'📊' },
+];
+
+// ─── Load & Render (all sync — no extra API calls for speed) ─────────────────
+function loadResults() {
+  const riasec = Store.get('riasecResult');
+  const saw    = Store.get('sawResult');
+
+  document.getElementById('loadingState').classList.add('hidden');
+
+  if (!riasec || !saw) {
+    document.getElementById('loadingState').classList.remove('hidden');
+    document.getElementById('loadingState').innerHTML = `
+      <div style="font-size:2rem;margin-bottom:1rem;">⚠️</div>
+      <p style="font-weight:600;margin-bottom:.5rem;">Data tidak ditemukan</p>
+      <p style="color:var(--muted);margin-bottom:1.5rem;">Silakan lengkapi tes RIASEC dan input nilai terlebih dahulu.</p>
+      <a href="riasec.html" class="btn btn-primary">Mulai dari Tes RIASEC →</a>
+    `;
+    return;
+  }
+
+  document.getElementById('resultContent').classList.remove('hidden');
+
+  renderHeader(riasec, saw);
+  renderRiasecScores(riasec);
+  renderCriteria(saw.saw_summary);
+  renderTable(saw.recommendations, saw.saw_summary);
+  renderTop3(saw.recommendations);
+  renderCareer(saw.career_match, riasec);
+  renderBKAdvice(riasec, saw);   // now sync — no await
+  renderMatrix(saw.recommendations);
+}
+
+function renderHeader(riasec, saw) {
+  document.getElementById('studentTitle').textContent = riasec.studentName;
+  document.getElementById('studentMeta').textContent =
+    `${riasec.studentClass || 'Kelas X'} · Cita-cita: ${riasec.aspiration || '—'} · ${new Date(saw.generated_at).toLocaleDateString('id-ID', {day:'numeric',month:'long',year:'numeric'})}`;
+  document.getElementById('hollandDisplay').textContent = riasec.hollandCode;
+}
+
+function renderRiasecScores(riasec) {
+  const scores = riasec.scores;
+  const sorted = [...PAGE_RIASEC_META].sort((a,b) => (scores[b.key]||0)-(scores[a.key]||0));
+  
+  document.getElementById('riasecScores').innerHTML = sorted.map(m => {
+    const score = scores[m.key] || 0;
+    const pct = (score/5)*100;
+    return `
+      <div style="margin-bottom:.85rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;">
+          <span style="font-size:.85rem;font-weight:600;">${m.icon} ${m.label}</span>
+          <span style="font-family:var(--font-mono);font-size:.85rem;font-weight:700;">${score.toFixed(2)}/5</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${pct}%;background:${m.color};transition:width .8s ease;"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const top = sorted[0];
+  document.getElementById('topPersonality').innerHTML = `
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+      <div style="font-size:2.5rem;">${top.icon}</div>
+      <div>
+        <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;">Tipe Dominan</div>
+        <div style="font-size:1.2rem;font-weight:700;color:${top.color};">${top.label}</div>
+      </div>
+    </div>
+    <div class="info-box" style="background:${top.color}18;border-color:${top.color};font-size:.85rem;line-height:1.7;">
+      ${getPersonalityDesc(top.key)}
+    </div>
+  `;
+}
+
+function getPersonalityDesc(type) {
+  const desc = {
+    realistic:     'Kamu praktis dan menyukai pekerjaan konkret. Kuat dalam bidang teknis dan fisik.',
+    investigative: 'Kamu analitis dan intelektual. Sangat cocok untuk karir di bidang sains, teknologi, dan penelitian.',
+    artistic:      'Kamu kreatif dan imajinatif. Unggul dalam ekspresi diri, desain, dan seni.',
+    social:        'Kamu peduli dan berorientasi pada orang. Ideal untuk karir di bidang pendidikan dan kesehatan.',
+    enterprising:  'Kamu ambisius dan suka memimpin. Cocok untuk bisnis, manajemen, dan kepemimpinan.',
+    conventional:  'Kamu terstruktur dan teliti. Unggul dalam akuntansi, administrasi, dan analisis data.',
+  };
+  return desc[type] || 'Kepribadian multidimensi yang kaya potensi.';
+}
+
+function renderCriteria(summary) {
+  if (!summary?.criteria) return;
+  const icons = ['📚','🧠','🎯','🏫'];
+  document.getElementById('criteriaGrid').innerHTML = summary.criteria.map((c, i) => `
+    <div class="card" style="margin:0;padding:1.25rem;background:var(--cream);">
+      <div style="font-size:1.5rem;margin-bottom:.5rem;">${icons[i]||'•'}</div>
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:.25rem;">${c.name}</div>
+      <div style="font-family:var(--font-mono);font-size:1.25rem;font-weight:800;color:var(--amber);">${c.weight}</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:.25rem;">Tipe: ${c.type}</div>
+    </div>
+  `).join('');
+  document.getElementById('totalAlts').textContent = summary.total_alternatives;
+}
+
+function renderTable(recommendations, summary) {
+  const weights = summary?.criteria?.map(c=>c.weight) || ['40%','30%','20%','10%'];
+  const thead = document.querySelector('#recTableBody').closest('table').querySelector('thead tr');
+  // Update header with actual weights
+  
+  document.getElementById('recTableBody').innerHTML = recommendations.map((r, idx) => `
+    <tr class="${idx===0?'rank-1':''}">
+      <td>${rankBadge(r.rank)}</td>
+      <td><strong>${r.subject}</strong></td>
+      <td><span class="badge badge-muted" style="font-size:.72rem;">${r.category}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div style="flex:1;height:4px;background:#e8e3db;border-radius:99px;overflow:hidden;">
+            <div style="width:${r.academic_score}%;height:100%;background:#3b82f6;border-radius:99px;"></div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:.8rem;">${r.academic_score}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div style="flex:1;height:4px;background:#e8e3db;border-radius:99px;overflow:hidden;">
+            <div style="width:${r.riasec_match}%;height:100%;background:#f59e0b;border-radius:99px;"></div>
+          </div>
+          <span style="font-family:var(--font-mono);font-size:.8rem;">${r.riasec_match}%</span>
+        </div>
+      </td>
+      <td><span style="font-family:var(--font-mono);font-size:.8rem;">${r.aspiration_score}%</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:.8rem;">${r.availability}%</span></td>
+      <td>
+        <strong style="font-family:var(--font-mono);font-size:.95rem;color:${idx===0?'#92400e':'var(--navy)'};">
+          ${(r.score*100).toFixed(2)}
+        </strong>
+      </td>
+      <td>
+        ${r.meets_minimum 
+          ? '<span class="badge badge-green">✓ Memenuhi</span>'
+          : `<span class="badge badge-red" title="Nilai min: ${r.min_grade}">⚠ Perhatian</span>`}
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderTop3(recommendations) {
+  const top3 = recommendations.slice(0, 3);
+  const medals = ['🥇','🥈','🥉'];
+  const colors = ['#fef3c7','#f1f5f9','#fff7ed'];
+  const borders = ['#f59e0b','#94a3b8','#f97316'];
+
+  document.getElementById('top3Cards').innerHTML = top3.map((r, i) => `
+    <div class="card" style="margin:0;background:${colors[i]};border-color:${borders[i]};border-width:2px;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">${medals[i]}</div>
+      <div style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);margin-bottom:.35rem;">RANK #${r.rank}</div>
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:.75rem;">${r.subject}</div>
+      <div style="font-size:.75rem;color:var(--muted);">
+        <div>📚 Akademik: <strong>${r.academic_score}</strong></div>
+        <div>🧠 RIASEC: <strong>${r.riasec_match}%</strong></div>
+        <div>🎯 Relevansi: <strong>${r.aspiration_score}%</strong></div>
+      </div>
+      <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid ${borders[i]}40;">
+        <span style="font-family:var(--font-mono);font-size:1.3rem;font-weight:800;">
+          ${(r.score*100).toFixed(1)}
+        </span>
+        <span style="font-size:.75rem;color:var(--muted);"> skor SAW</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCareer(careerMatch, riasec) {
+  if (!careerMatch || !careerMatch.label) return;
+  const section = document.getElementById('careerSection');
+  section.style.display = 'block';
+  
+  document.getElementById('careerContent').innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap;">
+      <div style="font-size:3rem;">${careerMatch.icon || '🎯'}</div>
+      <div style="flex:1;min-width:240px;">
+        <div style="font-size:.7rem;color:#92400e;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem;">Kecocokan Terbaik</div>
+        <div style="font-size:1.25rem;font-weight:700;margin-bottom:.5rem;">${careerMatch.label}</div>
+        <p style="font-size:.875rem;color:#78350f;line-height:1.7;margin-bottom:1rem;">${careerMatch.description || ''}</p>
+        <div>
+          <div style="font-size:.75rem;font-weight:600;color:#92400e;margin-bottom:.5rem;">Mata Pelajaran Utama:</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+            ${(careerMatch.subjects||[]).map(s=>`<span class="badge badge-amber">${s}</span>`).join('')}
+          </div>
+        </div>
+        ${careerMatch.optional?.length ? `
+          <div class="mt-2">
+            <div style="font-size:.75rem;font-weight:600;color:#92400e;margin-bottom:.5rem;">Mata Pelajaran Pendukung:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem;">
+              ${careerMatch.optional.map(s=>`<span class="badge badge-muted">${s}</span>`).join('')}
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderBKAdvice(riasec, saw) {
+  const top5 = saw.recommendations.slice(0, 5);
+  const meetsMin = top5.every(r => r.meets_minimum);
+  const hc = riasec.hollandCode || 'RIA';
+  const aspiration = riasec.aspiration || '';
+
+  const hcAdviceMap = {
+    'R': 'Pertimbangkan jurusan teknik, sains terapan, atau vokasi yang berbasis keterampilan praktis.',
+    'I': 'Kamu sangat cocok di bidang riset, MIPA, teknologi, atau kedokteran.',
+    'A': 'Eksplorasi jurusan seni, desain, sastra, komunikasi, atau arsitektur.',
+    'S': 'Pertimbangkan pendidikan, psikologi, kesehatan, atau pekerjaan sosial.',
+    'E': 'Bisnis, manajemen, hukum, atau kepemimpinan organisasi sangat cocok untukmu.',
+    'C': 'Akuntansi, keuangan, statistika, atau administrasi bisnis bisa jadi pilihan tepat.',
+  };
+
+  const advice = [];
+  for (const c of hc.slice(0, 2)) {
+    if (hcAdviceMap[c]) advice.push(hcAdviceMap[c]);
+  }
+  if (!meetsMin) advice.push('⚠️ Beberapa mata pelajaran pilihanmu mensyaratkan nilai minimum tertentu. Diskusikan dengan guru BK dan wali kelas untuk solusi terbaik.');
+  if (aspiration) advice.push(`Cita-citamu sebagai <strong>${aspiration}</strong> sudah terefleksi dalam rekomendasi. Konfirmasikan pilihan ini bersama orang tua.`);
+  advice.push('Proses pemilihan dilakukan pada <strong>akhir semester 2 kelas 10</strong>, dengan bimbingan resmi dari guru BK dan wali kelas.');
+  advice.push('Keputusan akhir ada pada siswa, orang tua, dan pihak sekolah setelah melalui sesi konsultasi tatap muka.');
+
+  const nextSteps = [
+    'Cetak atau simpan hasil rekomendasi ini',
+    'Diskusikan dengan guru BK di sekolah',
+    'Konsultasikan pilihan dengan orang tua',
+    'Cek ketersediaan kelas peminatan dan guru di sekolah',
+    'Pertimbangkan beban belajar dan kemampuan akademik',
+    'Konfirmasi pilihan sebelum akhir semester 2 kelas 10',
+  ];
+
+  document.getElementById('bkAdvice').innerHTML = `
+    <div class="grid-2">
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;">Saran untuk Siswa</div>
+        ${advice.map(a => `
+          <div style="padding:.5rem 0;border-bottom:1px solid var(--cream-dark);font-size:.875rem;line-height:1.65;">${a}</div>
+        `).join('')}
+      </div>
+      <div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;">Langkah Selanjutnya</div>
+        ${nextSteps.map((s, i) => `
+          <div style="display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--cream-dark);">
+            <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--amber);font-weight:700;min-width:20px;">${i+1}.</span>
+            <span style="font-size:.875rem;line-height:1.65;">${s}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="info-box info-box-amber mt-3" style="font-size:.85rem;">
+      ⚠️ Sistem ini bersifat <strong>pendukung keputusan</strong>, bukan penentu akhir. Keputusan terbaik lahir dari diskusi yang komprehensif bersama guru BK, wali kelas, dan orang tua.
+    </div>
+  `;
+}
+
+function renderMatrix(recommendations) {
+  const table = document.getElementById('matrixTable');
+  const header = `<thead><tr>
+    <th>Mata Pelajaran</th>
+    <th>r-Akademik</th>
+    <th>r-RIASEC</th>
+    <th>r-Cita-cita</th>
+    <th>r-Ketersediaan</th>
+    <th>w·r Akademik</th>
+    <th>w·r RIASEC</th>
+    <th>w·r Cita-cita</th>
+    <th>w·r Ketersediaan</th>
+    <th>Vi (Skor SAW)</th>
+  </tr></thead>`;
+
+  const rows = recommendations.map(r => `
+    <tr>
+      <td><strong>${r.subject}</strong></td>
+      <td class="font-mono">${r.normalized?.academic?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.normalized?.riasec?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.normalized?.aspiration?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.normalized?.availability?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.weighted?.academic?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.weighted?.riasec?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.weighted?.aspiration?.toFixed(4)||'-'}</td>
+      <td class="font-mono">${r.weighted?.availability?.toFixed(4)||'-'}</td>
+      <td class="font-mono" style="font-weight:700;">${r.score?.toFixed(4)||'-'}</td>
+    </tr>
+  `).join('');
+
+  table.innerHTML = header + `<tbody>${rows}</tbody>`;
+}
+
+function toggleMatrix() {
+  const panel = document.getElementById('matrixPanel');
+  const icon = document.getElementById('matrixToggleIcon');
+  panel.classList.toggle('hidden');
+  icon.textContent = panel.classList.contains('hidden') ? 'Tampilkan ▼' : 'Sembunyikan ▲';
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+window.onload = loadResults;</script>
+</body>
+</html>

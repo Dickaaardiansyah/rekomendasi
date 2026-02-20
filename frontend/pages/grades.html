@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Nilai Rapor — SPK Mapel</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="../index.html">📚 <span>SPK</span>Mapel</a>
+    <ul class="navbar-links">
+      <li><a href="../index.html">Beranda</a></li>
+      <li><a href="riasec.html">Tes RIASEC</a></li>
+      <li><a href="grades.html">Input Nilai</a></li>
+      <li><a href="result.html">Hasil</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-narrow" style="padding-top:2rem;">
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step done"><div class="step-num">✓</div><div class="step-label">Tes RIASEC</div></div>
+    <div class="step-line"></div>
+    <div class="step active"><div class="step-num">2</div><div class="step-label">Input Nilai</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">3</div><div class="step-label">Hasil SAW</div></div>
+  </div>
+
+  <!-- Profile Summary -->
+  <div id="profileBanner" class="card card-navy mb-3 hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="font-size:.75rem;color:#94a3b8;font-family:var(--font-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;">Profil Siswa</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--cream);" id="profileName"></div>
+        <div style="font-size:.875rem;color:#94a3b8;" id="profileDetail"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:.7rem;color:var(--amber);font-family:var(--font-mono);letter-spacing:.08em;margin-bottom:.25rem;">HOLLAND CODE</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--amber);letter-spacing:.15em;" id="profileHolland"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bobot Kustom -->
+  <div class="card mb-3">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleWeights()">
+      <h3 class="fw-600" style="font-size:1rem;">⚙️ Kustomisasi Bobot Kriteria SAW</h3>
+      <span id="toggleIcon" style="font-size:.8rem;color:var(--muted);">Tampilkan ▼</span>
+    </div>
+    <div id="weightsPanel" class="hidden mt-2">
+      <p style="font-size:.82rem;color:var(--muted);margin-bottom:1rem;">
+        Total bobot harus = 100%. Default: Akademik 40% · RIASEC 30% · Cita-cita 20% · Ketersediaan 10%
+      </p>
+      <div class="grid-2">
+        <div class="form-group mb-1">
+          <label class="form-label">Nilai Akademik (%)</label>
+          <input type="number" id="w_academic" class="form-control" value="40" min="10" max="70">
+        </div>
+        <div class="form-group mb-1">
+          <label class="form-label">Kecocokan RIASEC (%)</label>
+          <input type="number" id="w_riasec" class="form-control" value="30" min="10" max="70">
+        </div>
+        <div class="form-group mb-1">
+          <label class="form-label">Relevansi Cita-cita (%)</label>
+          <input type="number" id="w_aspiration" class="form-control" value="20" min="5" max="50">
+        </div>
+        <div class="form-group mb-1">
+          <label class="form-label">Ketersediaan (%)</label>
+          <input type="number" id="w_availability" class="form-control" value="10" min="5" max="30">
+        </div>
+      </div>
+      <div id="weightWarning" class="info-box info-box-amber mt-2 hidden">
+        ⚠️ Total bobot harus 100%. Saat ini: <span id="weightTotal">0</span>%.
+      </div>
+    </div>
+  </div>
+
+  <!-- Grades Form -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h2>Input Nilai Rapor Kelas 10</h2>
+      <p>Nilai rata-rata semester 1 &amp; 2 (skala 0–100). Kosongkan jika tidak pernah mengambil mata pelajaran tersebut.</p>
+    </div>
+
+    <!-- Group: MIPA -->
+    <div class="mb-3">
+      <div style="font-size:.75rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--cream-dark);">
+        🔬 Kelompok MIPA
+      </div>
+      <div class="grid-2" id="grades-mipa"></div>
+    </div>
+
+    <div class="mb-3">
+      <div style="font-size:.75rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--cream-dark);">
+        🌏 Kelompok IPS
+      </div>
+      <div class="grid-2" id="grades-ips"></div>
+    </div>
+
+    <div class="mb-3">
+      <div style="font-size:.75rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--cream-dark);">
+        ✍️ Bahasa &amp; Vokasi
+      </div>
+      <div class="grid-2" id="grades-other"></div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" onclick="submitGrades()" style="width:100%;" id="calcBtn">
+      Hitung Rekomendasi SAW →
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>SPK Mapel</strong> — Input nilai rapor kelas 10 untuk perhitungan SAW</p>
+</footer>
+
+<script src="../components/shared.js"></script>
+<script>
+const SUBJECTS = [
+  { id:1,  name:'Matematika Tingkat Lanjut', category:'IPA',       group:'mipa',  icon:'📐', default:78 },
+  { id:2,  name:'Fisika',                    category:'IPA',       group:'mipa',  icon:'⚛️', default:75 },
+  { id:3,  name:'Kimia',                     category:'IPA',       group:'mipa',  icon:'🧪', default:76 },
+  { id:4,  name:'Biologi',                   category:'IPA',       group:'mipa',  icon:'🔬', default:77 },
+  { id:5,  name:'Ekonomi',                   category:'IPS',       group:'ips',   icon:'💹', default:78 },
+  { id:6,  name:'Sosiologi',                 category:'IPS',       group:'ips',   icon:'👥', default:79 },
+  { id:7,  name:'Geografi',                  category:'IPS',       group:'ips',   icon:'🗺️', default:75 },
+  { id:8,  name:'Sejarah',                   category:'IPS',       group:'ips',   icon:'📜', default:80 },
+  { id:9,  name:'Antropologi',               category:'IPS',       group:'ips',   icon:'🏛️', default:76 },
+  { id:10, name:'Bahasa dan Sastra Indonesia',category:'Bahasa',   group:'other', icon:'📝', default:82 },
+  { id:11, name:'Bahasa dan Sastra Inggris', category:'Bahasa',    group:'other', icon:'🌐', default:78 },
+  { id:12, name:'Informatika',               category:'Teknologi', group:'other', icon:'💻', default:80 },
+  { id:13, name:'Prakarya & Kewirausahaan',  category:'Vokasi',    group:'other', icon:'🛠️', default:82 },
+  { id:14, name:'Pendidikan Kewarganegaraan',category:'Umum',      group:'other', icon:'🏛️', default:83 },
+];
+
+function buildGradeInputs(group, containerId) {
+  const el = document.getElementById(containerId);
+  const subjects = SUBJECTS.filter(s => s.group === group);
+  el.innerHTML = subjects.map(s => `
+    <div class="form-group mb-2">
+      <label class="form-label" style="display:flex;align-items:center;gap:.35rem;">
+        <span>${s.icon}</span> ${s.name}
+      </label>
+      <input type="number" id="grade_${s.id}" class="form-control" 
+             value="${s.default}" min="0" max="100" step="0.5"
+             placeholder="0 – 100">
+    </div>
+  `).join('');
+}
+
+function toggleWeights() {
+  const panel = document.getElementById('weightsPanel');
+  const icon = document.getElementById('toggleIcon');
+  panel.classList.toggle('hidden');
+  icon.textContent = panel.classList.contains('hidden') ? 'Tampilkan ▼' : 'Sembunyikan ▲';
+}
+
+// Validate weights
+['w_academic','w_riasec','w_aspiration','w_availability'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', () => {
+    const total = ['w_academic','w_riasec','w_aspiration','w_availability']
+      .reduce((sum, id) => sum + (parseInt(document.getElementById(id)?.value) || 0), 0);
+    const warn = document.getElementById('weightWarning');
+    document.getElementById('weightTotal').textContent = total;
+    warn.classList.toggle('hidden', total === 100);
+  });
+});
+
+async function submitGrades() {
+  const riasec = Store.get('riasecResult');
+  if (!riasec) { showToast('Lengkapi tes RIASEC terlebih dahulu', 'warning'); window.location.href='riasec.html'; return; }
+
+  // Collect grades
+  const grades = {};
+  SUBJECTS.forEach(s => {
+    const val = parseFloat(document.getElementById(`grade_${s.id}`)?.value);
+    grades[s.name] = isNaN(val) ? 0 : Math.min(Math.max(val, 0), 100);
+  });
+
+  // Weights
+  const wa = parseInt(document.getElementById('w_academic').value)||40;
+  const wr = parseInt(document.getElementById('w_riasec').value)||30;
+  const wasp = parseInt(document.getElementById('w_aspiration').value)||20;
+  const wav = parseInt(document.getElementById('w_availability').value)||10;
+  const total = wa+wr+wasp+wav;
+  if (total !== 100) { showToast(`Total bobot harus 100% (saat ini ${total}%)`, 'error'); return; }
+
+  const btn = document.getElementById('calcBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Menghitung SAW...';
+
+  try {
+    const res = await apiFetch('/recommend', {
+      method: 'POST',
+      body: JSON.stringify({
+        student_name: riasec.studentName,
+        student_class: riasec.studentClass,
+        grades,
+        riasec_scores: riasec.scores,
+        aspiration: riasec.aspiration || '',
+        custom_weights: { academic: wa/100, riasec: wr/100, aspiration: wasp/100, availability: wav/100 },
+      }),
+    });
+
+    if (!res.success) throw new Error(res.message);
+
+    Store.set('sawResult', res.data);
+    showToast('Berhasil! Mengarahkan ke halaman hasil...', 'success');
+    setTimeout(() => window.location.href = 'result.html', 800);
+  } catch(e) {
+    showToast('Gagal menghitung: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Hitung Rekomendasi SAW →';
+  }
+}
+
+// Init
+buildGradeInputs('mipa',  'grades-mipa');
+buildGradeInputs('ips',   'grades-ips');
+buildGradeInputs('other', 'grades-other');
+
+const riasec = Store.get('riasecResult');
+if (riasec) {
+  const banner = document.getElementById('profileBanner');
+  banner.classList.remove('hidden');
+  document.getElementById('profileName').textContent = riasec.studentName;
+  document.getElementById('profileDetail').textContent = 
+    `${riasec.studentClass || 'Kelas X'} · Cita-cita: ${riasec.aspiration || '—'}`;
+  document.getElementById('profileHolland').textContent = riasec.hollandCode;
+} else {
+  const warn = document.createElement('div');
+  warn.className = 'info-box info-box-amber mb-3';
+  warn.innerHTML = '⚠️ Data RIASEC tidak ditemukan. <a href="riasec.html" style="text-decoration:underline;font-weight:600;">Ikuti tes RIASEC terlebih dahulu</a>';
+  document.querySelector('.steps').after(warn);
+}
+</script>
+</body>
+</html>

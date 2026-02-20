@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tes RIASEC — SPK Mapel</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-logo" href="../index.html">📚 <span>SPK</span>Mapel</a>
+    <ul class="navbar-links">
+      <li><a href="../index.html">Beranda</a></li>
+      <li><a href="riasec.html">Tes RIASEC</a></li>
+      <li><a href="grades.html">Input Nilai</a></li>
+      <li><a href="result.html">Hasil</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-narrow" style="padding-top:2rem;">
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step active"><div class="step-num">1</div><div class="step-label">Tes RIASEC</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">2</div><div class="step-label">Input Nilai</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-num">3</div><div class="step-label">Hasil SAW</div></div>
+  </div>
+
+  <!-- Student Info Card -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h2>Tes Kepribadian RIASEC</h2>
+      <p>30 pertanyaan · Skala 1–5 · ±5 menit</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Nama Lengkap *</label>
+        <input type="text" id="studentName" class="form-control" placeholder="Masukkan nama lengkap">
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label class="form-label">Kelas</label>
+        <select id="studentClass" class="form-control">
+          <option value="">Pilih kelas</option>
+          <option value="X IPA 1">X IPA 1</option>
+          <option value="X IPA 2">X IPA 2</option>
+          <option value="X IPS 1">X IPS 1</option>
+          <option value="X IPS 2">X IPS 2</option>
+          <option value="X Bahasa">X Bahasa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group mt-3" style="margin-bottom:0;">
+      <label class="form-label">Cita-cita / Jurusan yang Diminati <span style="font-weight:400;color:var(--muted)">(opsional — mempengaruhi rekomendasi)</span></label>
+      <input type="text" id="aspiration" class="form-control" placeholder="Contoh: dokter, insinyur, programmer, penulis, pengusaha...">
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="card mb-3" id="progressCard">
+    <div class="progress-wrap" style="margin:0;">
+      <div class="progress-meta">
+        <span id="progressLabel">Belum dimulai</span>
+        <span id="progressCount">0 / 30</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions -->
+  <div id="questionsSection">
+    <div id="dimensionHeader" class="card mb-2 hidden" style="padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;">
+      <div id="dimIcon" style="font-size:1.75rem;"></div>
+      <div>
+        <div id="dimCode" style="font-size:.7rem;font-family:var(--font-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase;"></div>
+        <div id="dimName" style="font-weight:700;"></div>
+      </div>
+    </div>
+    <div id="questionsContainer"></div>
+  </div>
+
+  <!-- Navigation -->
+  <div style="display:flex;justify-content:space-between;margin-top:1rem;gap:1rem;" id="navBtns">
+    <button class="btn btn-ghost" id="prevBtn" onclick="navigate(-1)" disabled>← Sebelumnya</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">Selanjutnya →</button>
+  </div>
+
+  <!-- Submit -->
+  <div id="submitSection" class="hidden mt-3">
+    <div class="info-box info-box-green mb-2">
+      ✅ Semua soal telah terjawab. Klik tombol di bawah untuk melihat hasil analisis RIASEC.
+    </div>
+    <button class="btn btn-success btn-lg" onclick="submitTest()" style="width:100%;" id="submitBtn">
+      Lihat Hasil RIASEC →
+    </button>
+  </div>
+
+</div>
+
+<footer>
+  <p><strong>SPK Mapel</strong> — Tes RIASEC berbasis Teori Holland (1959)</p>
+</footer>
+
+<script src="../components/shared.js"></script>
+<script>
+// ─── State ─────────────────────────────────────────────────────────────────
+
+let questions = [];
+let answers = [];
+let currentPage = 0; // Shows 1 question at a time (can show dimension blocks)
+const QUESTIONS_PER_PAGE = 5; // 5 soal per dimensi
+
+const DIM_META = [
+  { code: 'R', name: 'Realistic',     icon: '🔧', color: '#10b981', desc: 'Fisik & Teknis' },
+  { code: 'I', name: 'Investigative', icon: '🔬', color: '#3b82f6', desc: 'Analitis & Sains' },
+  { code: 'A', name: 'Artistic',      icon: '🎨', color: '#8b5cf6', desc: 'Kreatif & Seni' },
+  { code: 'S', name: 'Social',        icon: '🤝', color: '#f59e0b', desc: 'Sosial & Peduli' },
+  { code: 'E', name: 'Enterprising',  icon: '💼', color: '#ef4444', desc: 'Pemimpin & Bisnis' },
+  { code: 'C', name: 'Conventional',  icon: '📊', color: '#06b6d4', desc: 'Terstruktur & Data' },
+];
+
+// ─── Load Questions ──────────────────────────────────────────────────────────
+
+async function loadQuestions() {
+  try {
+    const res = await apiFetch('/questions');
+    questions = res.data;
+    answers = new Array(questions.length).fill(null);
+    renderPage(0);
+  } catch (e) {
+    showToast('Gagal memuat soal. Pastikan server berjalan.', 'error');
+  }
+}
+
+// ─── Render Page (5 soal per halaman/dimensi) ─────────────────────────────────
+
+function renderPage(page) {
+  currentPage = page;
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  const start = page * QUESTIONS_PER_PAGE;
+  const end = Math.min(start + QUESTIONS_PER_PAGE, questions.length);
+  const pageQuestions = questions.slice(start, end);
+  const dim = DIM_META[page] || DIM_META[0];
+
+  // Dimension header
+  const header = document.getElementById('dimensionHeader');
+  header.classList.remove('hidden');
+  header.style.borderLeft = `4px solid ${dim.color}`;
+  document.getElementById('dimIcon').textContent = dim.icon;
+  document.getElementById('dimCode').textContent = `Dimensi ${dim.code} — ${dim.desc}`;
+  document.getElementById('dimName').textContent = dim.name;
+  document.getElementById('dimName').style.color = dim.color;
+
+  // Questions
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = pageQuestions.map((q, i) => {
+    const globalIdx = start + i;
+    const answered = answers[globalIdx] !== null;
+    return `
+      <div class="question-block ${answered ? 'answered' : ''}" id="qblock_${globalIdx}">
+        <div class="question-num">Soal ${globalIdx + 1} dari ${questions.length}</div>
+        <div class="question-text">${q.text}</div>
+        <div class="scale-row">
+          <span class="scale-label">Sangat Tidak Setuju</span>
+          <div class="scale-options">
+            ${[1,2,3,4,5].map(v => `
+              <button class="scale-btn ${answers[globalIdx] === v ? 'selected' : ''}"
+                      onclick="saveAnswer(${globalIdx}, ${v})" type="button">${v}</button>
+            `).join('')}
+          </div>
+          <span class="scale-label">Sangat Setuju</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Navigation
+  document.getElementById('prevBtn').disabled = page === 0;
+  const isLast = page === totalPages - 1;
+  document.getElementById('nextBtn').textContent = isLast ? 'Selesai ✓' : 'Dimensi Berikutnya →';
+  document.getElementById('submitSection').classList.toggle('hidden', !isLast || answers.includes(null));
+
+  updateProgress();
+}
+
+// ─── Save Answer ─────────────────────────────────────────────────────────────
+
+function saveAnswer(idx, val) {
+  answers[idx] = val;
+  
+  // Update buttons on page
+  const block = document.getElementById(`qblock_${idx}`);
+  if (block) {
+    block.classList.add('answered');
+    block.querySelectorAll('.scale-btn').forEach((btn, i) => {
+      btn.classList.toggle('selected', i + 1 === val);
+    });
+  }
+  updateProgress();
+  
+  // Auto show submit if last page
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  if (currentPage === totalPages - 1 && !answers.includes(null)) {
+    document.getElementById('submitSection').classList.remove('hidden');
+  }
+}
+
+// ─── Navigate ─────────────────────────────────────────────────────────────────
+
+function navigate(dir) {
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+  const next = currentPage + dir;
+  if (next < 0 || next >= totalPages) return;
+  renderPage(next);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const pct = (answered / questions.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = `${answered} / ${questions.length}`;
+  document.getElementById('progressLabel').textContent =
+    answered === questions.length ? '✅ Semua soal terjawab!' :
+    answered === 0 ? 'Belum dimulai' : 'Sedang mengerjakan...';
+}
+
+// ─── Submit ───────────────────────────────────────────────────────────────────
+
+async function submitTest() {
+  const studentName = document.getElementById('studentName').value.trim();
+  if (!studentName) { showToast('Masukkan nama lengkap terlebih dahulu', 'warning'); return; }
+  if (answers.includes(null)) { showToast('Harap jawab semua pertanyaan', 'warning'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Memproses...';
+
+  try {
+    const res = await apiFetch('/riasec/calculate', {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    });
+
+    if (!res.success) throw new Error(res.message);
+
+    Store.set('riasecResult', {
+      studentName,
+      studentClass: document.getElementById('studentClass').value,
+      aspiration: document.getElementById('aspiration').value.trim(),
+      scores: res.data.scores,
+      hollandCode: res.data.holland_code,
+      topType: res.data.top_type,
+      topDescription: res.data.top_description,
+      suggestedPackages: res.data.suggested_packages,
+      date: new Date().toISOString(),
+    });
+
+    showToast('Berhasil! Mengarahkan ke halaman nilai...', 'success');
+    setTimeout(() => window.location.href = 'grades.html', 1000);
+  } catch (e) {
+    showToast('Gagal mengirim. Coba lagi.', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Lihat Hasil RIASEC →';
+  }
+}
+
+window.onload = loadQuestions;
+</script>
+</body>
+</html>
